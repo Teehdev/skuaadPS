@@ -10,11 +10,11 @@ const uriSchema = mongoose.Schema({
         type: String,
      },
       startDate: {
-        type: Date.UTC,
+        type: Date,
         unique: true,
      },
       lastSeenDate: {
-        type: Date.UTC,
+        type: Date,
         unique: true,
      },
      redirectCount: {

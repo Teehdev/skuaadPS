@@ -53,8 +53,9 @@ if (uri) {
     })
     res.send(urlDoc)
 }
-} catch (error) {
-    res.err(error)
+} catch (err) {
+    console.error(err)
+    res.status(500).json('Server error')
 }
 
 }
@@ -68,19 +69,29 @@ if (validator.isEmpty(shortCode, { ignore_whitespace: true})) {
         message: "short code should not be empty"
     })
 }
-
-const uri = await Url.findOne({
-    shortCode: shortCode
-})
-
-if (uri) {
-    res.redirect(301, uri.url)
-    res.writeheader()
-} else {
-    res.status(404).json({
-        "Error": "shortcode does not exist"
+ try {
+    const uri = await Url.findOne({
+        shortCode: shortCode
     })
-}
+    
+    if (uri) {
+        let redirectCount = uri.redirectCount
+        redirectCount += 
+        lastSeenDate = Date.now
+        Url.updateOne({ shortCode: shortCode},
+            {$set: {redirectCount:redirectCount, lastSeenDate: lastSeenDate}, })
+        res.redirect(301, uri.url)
+        // res.writeheader()
+    } else {
+        return res.status(404).json({
+            "Error": "shortcode does not exist"
+        })
+    }
+ } catch (err) {
+     console.error(err)
+     res.status(500).json('Server error')
+ }
+
 
 }
 
@@ -93,18 +104,24 @@ if (validator.isEmpty(shortCode, { ignore_whitespace: true})) {
         message: "short code should not be empty"
     })
 }
-
-const uri = await Url.findOne({
-    shortCode: shortCode
-})
-
-if (uri) {
-    res.send(uri)
-} else {
-    res.status(404).json({
-        "Error": "shortcode does not exist"
+ 
+try {
+    const uri = await Url.findOne({
+        shortCode: shortCode
     })
+    
+    if (uri) {
+        res.send(uri)
+    } else {
+        res.status(404).json({
+            "Error": "shortcode does not exist"
+        })
+    }
+} catch (err) {
+    console.error(err)
+    res.status(500).json('Server error')
 }
+
 
 }
 
